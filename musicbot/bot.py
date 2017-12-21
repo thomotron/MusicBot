@@ -2366,8 +2366,22 @@ class MusicBot(discord.Client):
         command = command[len(self.config.command_prefix):].lower().strip()
 
         handler = getattr(self, 'cmd_' + command, None)
-        if not handler:
-            return
+
+        if not handler:  # Start processing custom aliases
+            if command == 'vol':
+                handler = getattr(self, 'cmd_volume', None)
+            elif command == 'nowplaying' or command == 'playing':
+                handler = getattr(self, 'cmd_np', None)
+            elif command == 'dc':
+                handler = getattr(self, 'cmd_disconnect', None)
+            elif command == 'join':
+                handler = getattr(self, 'cmd_summon', None)
+            elif command == 'leave':
+                handler = getattr(self, 'cmd_disconnect', None)
+            elif command == 'list' or command == 'ls':
+                handler = getattr(self, 'cmd_queue', None)
+            else:
+                return
 
         if message.channel.is_private:
             if not (message.author.id == self.config.owner_id and command == 'joinserver'):

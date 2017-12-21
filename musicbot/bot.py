@@ -1242,15 +1242,21 @@ class MusicBot(discord.Client):
         except:
             raise exceptions.CommandError('Invalid URL provided:\n{}\n'.format(server_link), expire_in=30)
 
-    async def cmd_play(self, player, channel, author, permissions, leftover_args, song_url):
+    async def cmd_play(self, player, channel, author, permissions, leftover_args=None, song_url=None):
         """
         Usage:
             {command_prefix}play song_link
             {command_prefix}play text to search for
+            {command_prefix}play
 
-        Adds the song to the playlist.  If a link is not provided, the first
+        Adds the song to the playlist or unpauses the player if no
+        parameters are provided. If a link is not provided, the first
         result from a youtube search is added to the queue.
         """
+
+        if not leftover_args and not song_url:
+            await self.cmd_resume(player)
+            return
 
         song_url = song_url.strip('<>')
 
@@ -2380,6 +2386,8 @@ class MusicBot(discord.Client):
                 handler = getattr(self, 'cmd_disconnect', None)
             elif command == 'list' or command == 'ls':
                 handler = getattr(self, 'cmd_queue', None)
+            elif command == 'unpause':
+                handler = getattr(self, 'cmd_resume', None)
             else:
                 return
 

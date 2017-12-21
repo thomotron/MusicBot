@@ -2281,12 +2281,12 @@ class MusicBot(discord.Client):
         return Response("\N{DASH SYMBOL}", delete_after=20)
 
     async def cmd_restart(self, channel):
-        await self.safe_send_message(channel, "\N{WAVING HAND SIGN}")
+        await self.safe_send_message(channel, "\N{ANTICLOCKWISE DOWNWARDS AND UPWARDS OPEN CIRCLE ARROWS} I'll be back in a sec!")
         await self.disconnect_all_voice_clients()
         raise exceptions.RestartSignal()
 
     async def cmd_shutdown(self, channel):
-        await self.safe_send_message(channel, "\N{WAVING HAND SIGN}")
+        await self.safe_send_message(channel, "\N{BED} Goodnight...")
         await self.disconnect_all_voice_clients()
         raise exceptions.TerminateSignal()
 

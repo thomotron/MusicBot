@@ -1555,6 +1555,29 @@ class MusicBot(discord.Client):
 
         return Response(":+1:", delete_after=6)
 
+    async def cmd_replay(self, player, channel, author, permissions):
+        """
+        Usage:
+            {command_prefix}replay
+
+        Enqueues the last song that was played.
+        """
+
+        if permissions.max_songs and player.playlist.count_for_user(author) >= permissions.max_songs:
+            raise exceptions.PermissionsError(
+                "You have reached your enqueued song limit (%s)" % permissions.max_songs, expire_in=30
+            )
+
+        if player.previous_entry:
+            await self.send_typing(channel)
+            await player.playlist.add_entry(player.previous_entry.url)
+
+            return Response(
+                "Enqueued **%s** to be played." % player.previous_entry.title, delete_after=30
+            )
+        else:
+            raise exceptions.CommandError("No songs have been played yet.", expire_in=30)
+
     async def cmd_search(self, player, channel, author, permissions, leftover_args):
         """
         Usage:

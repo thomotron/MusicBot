@@ -107,6 +107,7 @@ class MusicPlayer(EventEmitter, Serializable):
         self._play_lock = asyncio.Lock()
         self._current_player = None
         self._current_entry = None
+        self._previous_entry = None
         self._stderr_future = None
 
         self.playlist.on('entry-added', self.on_entry_added)
@@ -179,6 +180,7 @@ class MusicPlayer(EventEmitter, Serializable):
             self._current_player.after = None
             self._kill_current_player()
 
+        self._previous_entry = entry
         self._current_entry = None
 
         if self._stderr_future.done() and self._stderr_future.exception():
@@ -331,6 +333,7 @@ class MusicPlayer(EventEmitter, Serializable):
 
     def __json__(self):
         return self._enclose_json({
+            'previous_entry': self.previous_entry,
             'current_entry': {
                 'entry': self.current_entry,
                 'progress': self.progress,
@@ -346,6 +349,10 @@ class MusicPlayer(EventEmitter, Serializable):
         assert playlist is not None, cls._bad('playlist')
 
         player = cls(bot, voice_client, playlist)
+
+        previous_entry_data = data['previous_entry']
+        if previous_entry_data:
+            player.previous_entry = previous_entry_data
 
         data_pl = data.get('entries')
         if data_pl and data_pl.entries:
@@ -368,6 +375,12 @@ class MusicPlayer(EventEmitter, Serializable):
         except:
             log.exception("Failed to deserialize player")
 
+    @property
+    def previous_entry(self):
+        return self._previous_entry
+    @previous_entry.setter  # This is really gross and certainly could be better but 1) I'm new to Python, and 2) it's 4:07 AM.
+    def previous_entry(self, value):
+        self._previous_entry = value
 
     @property
     def current_entry(self):

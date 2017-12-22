@@ -78,13 +78,14 @@ class BasePlaylistEntry(Serializable):
 
 
 class URLPlaylistEntry(BasePlaylistEntry):
-    def __init__(self, playlist, url, title, duration=0, expected_filename=None, **meta):
+    def __init__(self, playlist, url, title, duration=0, start_time=0, expected_filename=None, **meta):
         super().__init__()
 
         self.playlist = playlist
         self.url = url
         self.title = title
         self.duration = duration
+        self.start_time = start_time
         self.expected_filename = expected_filename
         self.meta = meta
 
@@ -96,6 +97,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
             'url': self.url,
             'title': self.title,
             'duration': self.duration,
+            'start_time': self.start_time,
             'downloaded': self.is_downloaded,
             'expected_filename': self.expected_filename,
             'filename': self.filename,
@@ -118,6 +120,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
             url = data['url']
             title = data['title']
             duration = data['duration']
+            start_time = data['start_time']
             downloaded = data['downloaded']
             filename = data['filename'] if downloaded else None
             expected_filename = data['expected_filename']
@@ -253,6 +256,7 @@ class StreamPlaylistEntry(BasePlaylistEntry):
         self.title = title
         self.destination = destination
         self.duration = 0
+        self.start_time = 0
         self.meta = meta
 
         if self.destination:

@@ -265,7 +265,7 @@ class MusicPlayer(EventEmitter, Serializable):
 
                 boptions = "-nostdin"
                 # aoptions = "-vn -b:a 192k"
-                aoptions = "-vn"
+                aoptions = "-vn -ss {}".format(entry.start_time)
 
                 log.ffmpeg("Creating player with options: {} {} {}".format(boptions, aoptions, entry.filename))
 

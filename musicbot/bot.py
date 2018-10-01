@@ -1865,6 +1865,16 @@ class MusicBot(discord.Client):
 
         return Response(self.str.get('cmd-summon-reply', 'Connected to `{0.name}`').format(author.voice.channel))
 
+    async def cmd_join(self, channel, guild, author, voice_channel):
+        """
+        Usage:
+            {command_prefix}join
+
+        Call the bot to the summoner's voice channel.
+        """
+
+        return await self.cmd_summon(channel, guild, author, voice_channel)
+
     async def cmd_pause(self, player):
         """
         Usage:
@@ -2101,6 +2111,17 @@ class MusicBot(discord.Client):
                 raise exceptions.CommandError(
                     self.str.get('cmd-volume-unreasonable-absolute', 'Unreasonable volume provided: {}%. Provide a value between 1 and 100.').format(new_volume), expire_in=20)
 
+    async def cmd_vol(self, message, player, new_volume=None):
+        """
+        Usage:
+            {command_prefix}vol (+/-)[volume]
+
+        Sets the playback volume. Accepted values are from 1 to 100.
+        Putting + or - before the volume will make the volume change relative to the current volume.
+        """
+
+        return await self.cmd_volume(message, player, new_volume)
+
     @owner_only
     async def cmd_option(self, player, option, value):
         """
@@ -2204,6 +2225,16 @@ class MusicBot(discord.Client):
 
         message = '\n'.join(lines)
         return Response(message, delete_after=30)
+
+    async def cmd_list(self, channel, player):
+        """
+        Usage:
+            {command_prefix}list
+
+        Prints the current song queue.
+        """
+
+        return await self.cmd_queue(channel, player)
 
     async def cmd_clean(self, message, channel, guild, author, search_range=50):
         """
@@ -2443,17 +2474,27 @@ class MusicBot(discord.Client):
         """
         Usage:
             {command_prefix}disconnect
-        
+
         Forces the bot leave the current voice channel.
         """
         await self.disconnect_voice_client(guild)
         return Response("Disconnected from `{0.name}`".format(guild), delete_after=20)
 
+    async def cmd_leave(self, guild):
+        """
+        Usage:
+            {command_prefix}leave
+
+        Forces the bot leave the current voice channel.
+        """
+
+        return await self.cmd_disconnect(guild)
+
     async def cmd_restart(self, channel):
         """
         Usage:
             {command_prefix}restart
-        
+
         Restarts the bot.
         Will not properly load new dependencies or file updates unless fully shutdown
         and restarted.

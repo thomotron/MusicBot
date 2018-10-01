@@ -109,6 +109,7 @@ class Playlist(EventEmitter, Serializable):
             song_url,
             info.get('title', 'Untitled'),
             info.get('duration', 0) or 0,
+            info.get('start_time', 0) or 0,
             self.downloader.ytdl.prepare_filename(info),
             **meta
         )
@@ -199,6 +200,7 @@ class Playlist(EventEmitter, Serializable):
                         item[url_field],
                         item.get('title', 'Untitled'),
                         item.get('duration', 0) or 0,
+                        info.get('start_time', 0) or 0,
                         self.downloader.ytdl.prepare_filename(item),
                         **meta
                     )

@@ -81,16 +81,17 @@ class BasePlaylistEntry(Serializable):
 
 
 class URLPlaylistEntry(BasePlaylistEntry):
-    def __init__(self, playlist, url, title, duration=0, expected_filename=None, **meta):
+    def __init__(self, playlist, url, title, duration=0, start_time=0, expected_filename=None, **meta):
         super().__init__()
 
         self.playlist = playlist
         self.url = url
         self.title = title
         self.duration = duration
+        self.start_time = start_time
         self.expected_filename = expected_filename
         self.meta = meta
-        self.aoptions = '-vn'
+        self.aoptions = '-vn -ss {}'.format(self.start_time)
 
         self.download_folder = self.playlist.downloader.download_folder
 
@@ -100,6 +101,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
             'url': self.url,
             'title': self.title,
             'duration': self.duration,
+            'start_time': self.start_time,
             'downloaded': self.is_downloaded,
             'expected_filename': self.expected_filename,
             'filename': self.filename,
@@ -123,6 +125,7 @@ class URLPlaylistEntry(BasePlaylistEntry):
             url = data['url']
             title = data['title']
             duration = data['duration']
+            start_time = data['start_time']
             downloaded = data['downloaded'] if playlist.bot.config.save_videos else False
             filename = data['filename'] if downloaded else None
             expected_filename = data['expected_filename']
@@ -212,13 +215,13 @@ class URLPlaylistEntry(BasePlaylistEntry):
             if self.playlist.bot.config.use_experimental_equalization:
                 try:
                     mean, maximum = await self.get_mean_volume(self.filename)
-                    aoptions = '-af "volume={}dB"'.format((maximum * -1))
+                    aoptions = '-af "volume={}dB" -ss {}'.format((maximum * -1), self.start_time)
                 except Exception as e:
                     log.error('There as a problem with working out EQ, likely caused by a strange installation of FFmpeg. '
                               'This has not impacted the ability for the bot to work, but will mean your tracks will not be equalised.')
-                    aoptions = "-vn"
+                    aoptions = "-vn -ss {}".format(self.start_time)
             else:
-                aoptions = "-vn"
+                aoptions = "-vn -ss {}".format(self.start_time)
 
             self.aoptions = aoptions
 

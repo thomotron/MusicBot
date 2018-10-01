@@ -1602,6 +1602,16 @@ class MusicBot(discord.Client):
         return Response(self.str.get('cmd-play-playlist-reply-secs', "Enqueued {0} songs to be played in {1} seconds").format(
             songs_added, fixg(ttime, 1)), delete_after=30)
 
+    async def cmd_replay(self, message, player, channel, author, permissions, leftover_args):
+        """
+        Usage:
+            {command_prefix}replay
+
+        Enqueues the last song that was played.
+        """
+
+        return await self.cmd_play(message, player, channel, author, permissions, leftover_args, player.previous_entry.url)
+
     async def cmd_stream(self, player, channel, author, permissions, song_url):
         """
         Usage:
